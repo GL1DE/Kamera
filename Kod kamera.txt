@@ -1,224 +1,312 @@
-from imutils.video import VideoStream
-import cv2
-import imutils
-import numpy as np
-import matplotlib.pyplot as plt
-import sys
-import argparse
-import time
+# from imutils.video import VideoStream
+# import cv2
+# import imutils
+# import numpy as np
+# import matplotlib.pyplot as plt
+# import sys
+# import argparse
+# import time
 
-# aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_250)
-# aruco_params = cv2.aruco.DetectorParameters()
-# (corners, ids, rejected) = cv2.aruco.ArucoDetector(image, aruco_dict, 
-# parameters = aruco_params)
+# # aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_250)
+# # aruco_params = cv2.aruco.DetectorParameters()
+# # (corners, ids, rejected) = cv2.aruco.ArucoDetector(image, aruco_dict, 
+# # parameters = aruco_params)
 
-# marker_id = 4
-# marker_size = 200
-# marker_image = cv2.aruco.generateImageMarker(aruco_dict, marker_id, marker_size)
+# # marker_id = 4
+# # marker_size = 200
+# # marker_image = cv2.aruco.generateImageMarker(aruco_dict, marker_id, marker_size)
 
-# cv2.imwrite('marker_42.png', marker_image)
-# plt.imshow(marker_image, cmap = 'gray', interpolation = 'nearest')
-# plt.axis('off')
-# plt.title(f'ArUco Marker {marker_id}')
-# plt.show()
+# # cv2.imwrite('marker_42.png', marker_image)
+# # plt.imshow(marker_image, cmap = 'gray', interpolation = 'nearest')
+# # plt.axis('off')
+# # plt.title(f'ArUco Marker {marker_id}')
+# # plt.show()
 
-# image = cv2.imread('/content/marker_42.png')
+# # image = cv2.imread('/content/marker_42.png')
 
-# gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-# aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
-# parameters = cv2.aruco.DetectorParameters()
+# # gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+# # aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
+# # parameters = cv2.aruco.DetectorParameters()
 
-# detector = cv2.aruco.ArucoDetector(aruco_dict, parameters)
-# corners, ids, rejected = detector.detectMarkers(gray)
+# # detector = cv2.aruco.ArucoDetector(aruco_dict, parameters)
+# # corners, ids, rejected = detector.detectMarkers(gray)
 
-# print("Detected markers:", ids)
-# if ids is not None:
-#     cv2.aruco.drawDetectedMarkers(image, corners, ids)
-#     cv2.imshow('Detected Markers', image)
-#     cv2.waitKey(0)
-#     cv2.destroyAllWindows()
+# # print("Detected markers:", ids)
+# # if ids is not None:
+# #     cv2.aruco.drawDetectedMarkers(image, corners, ids)
+# #     cv2.imshow('Detected Markers', image)
+# #     cv2.waitKey(0)
+# #     cv2.destroyAllWindows()
 
 
-#/////////////////////////////////////////////////////////////////////////////
+# #/////////////////////////////////////////////////////////////////////////////
 
-#TAKEN IMAGE READ CODE
+# #TAKEN IMAGE READ CODE
+
+# # ap = argparse.ArgumentParser()
+# # ap.add_argument("-i", "--image", required = True,
+# #                 help = "path to input image containing ArUCo tag")
+# # ap.add_argument("-t", "--type", type = str,
+# #                 default = "DICT_ARUCO_ORIGINAL",
+# #                 help = "type of ArUCO tag to detect")
+# # args = vars(ap.parse_args())
+
+# # ARUCO_DICT = {
+# #     "DICT_4X4_50": cv2.aruco.DICT_4X4_50,
+# # 	"DICT_4X4_100": cv2.aruco.DICT_4X4_100,
+# # 	"DICT_4X4_250": cv2.aruco.DICT_4X4_250,
+# # 	"DICT_4X4_1000": cv2.aruco.DICT_4X4_1000,
+# #     "DICT_ARUCO_ORIGINAL": cv2.aruco.DICT_ARUCO_ORIGINAL,
+# # 	"DICT_APRILTAG_16h5": cv2.aruco.DICT_APRILTAG_16h5,
+# # 	"DICT_APRILTAG_25h9": cv2.aruco.DICT_APRILTAG_25h9,
+# # 	"DICT_APRILTAG_36h10": cv2.aruco.DICT_APRILTAG_36h10,
+# # 	"DICT_APRILTAG_36h11": cv2.aruco.DICT_APRILTAG_36h11
+# # }
+
+# # #fetch image
+# # print("[INFO] loading image...")
+# # image = cv2.imread(args["image"])
+# # image = imutils.resize(image, width = 600)
+
+# # #Check which aruco tag it is
+# # if ARUCO_DICT.get(args["type"], None) is None:
+# #     print("[INFO] ArUCo tag of '{}' is not supported".format 
+# #           (args["type"]))
+# #     sys.exit(0)
+
+# # #Load aruco dict, grab aruco params, detect markers
+# # print("[INFO] detecting '{}' tags...".format(args["type"]))
+# # arucoDict = cv2.aruco.Dictionary_get(ARUCO_DICT[args["type"]])
+# # arucoParams = cv2.aruco.DetectorParameters_create()
+# # (corners, ids, rejected) = cv2.aruco.detectMarkers(image, arucoDict,
+# # parameters = arucoParams)
+
+# # if len(corners) > 0:
+# #     ids = ids.flatten()
+
+# # #Loop over detected markers
+# #     for (markerCorner, markerID) in zip(corners, ids):
+# # #Extract corners (top left, top right, bottom right, bottom left always
+# # #that order)
+# #         corners = markerCorner.reshape((4,2))
+# #         (topLeft, topRight, bottomRight, bottomLeft) = corners
+
+# # #Convert corners from (x, y) to int
+# #         topLeft = (int(topRight[0]), int(topRight[1]))
+# #         topRight = (int(topRight[0]), int(topRight[1]))
+# #         bottomRight = (int(bottomRight[0]), int(bottomRight[1]))
+# #         bottomLeft = (int(bottomLeft[0], int(bottomLeft[1])))
+
+# # #Draw box around aruco marker
+# #         cv2.line(image, topLeft, topRight, (0, 255, 0), 2)
+# #         cv2.line(image, topRight, bottomRight, (0, 255, 0), 2)
+# #         cv2.line(image, bottomRight, bottomLeft, (0, 255, 0), 2)
+# #         cv2.line(image, bottomLeft, topLeft, (0, 255, 0), 2)
+
+# # #Find center of aruco marker
+# #         cX = int((topLeft[0] + bottomRight[0]) / 2.0)
+# #         cY = int((topLeft[1] + bottomRight[1]) / 2.0)
+# #         cv2.circle(image, (cX, cY), 4, (0, 0, 255), -1)
+
+# # #Draw marker id
+# #         cv2.putText(image, str(markerID),
+# #                     (topLeft[0], topLeft[1] - 15), cv2.FONT_HERSHEY_SIMPLEX,
+# #                     0.5, (0, 255, 0), 2)
+# #         print("[INFO] ArUco marker ID: {}".format(markerID))
+
+# # #Show output image
+# #         cv2.imshow("Image", image)
+# #         cv2.waitKey(0)
+
+# #/////////////////////////////////////////////////////////////////////////////
+
+# #LIVE IMAGE/VIDEO ARUCO DETECTION
 
 # ap = argparse.ArgumentParser()
-# ap.add_argument("-i", "--image", required = True,
-#                 help = "path to input image containing ArUCo tag")
 # ap.add_argument("-t", "--type", type = str,
 #                 default = "DICT_ARUCO_ORIGINAL",
-#                 help = "type of ArUCO tag to detect")
+#                 help = "type of ArUCo tag to detect")
 # args = vars(ap.parse_args())
 
 # ARUCO_DICT = {
-#     "DICT_4X4_50": cv2.aruco.DICT_4X4_50,
+# 	"DICT_4X4_50": cv2.aruco.DICT_4X4_50,
 # 	"DICT_4X4_100": cv2.aruco.DICT_4X4_100,
 # 	"DICT_4X4_250": cv2.aruco.DICT_4X4_250,
 # 	"DICT_4X4_1000": cv2.aruco.DICT_4X4_1000,
-#     "DICT_ARUCO_ORIGINAL": cv2.aruco.DICT_ARUCO_ORIGINAL,
+# 	"DICT_5X5_50": cv2.aruco.DICT_5X5_50,
+# 	"DICT_5X5_100": cv2.aruco.DICT_5X5_100,
+# 	"DICT_5X5_250": cv2.aruco.DICT_5X5_250,
+# 	"DICT_5X5_1000": cv2.aruco.DICT_5X5_1000,
+# 	"DICT_6X6_50": cv2.aruco.DICT_6X6_50,
+# 	"DICT_6X6_100": cv2.aruco.DICT_6X6_100,
+# 	"DICT_6X6_250": cv2.aruco.DICT_6X6_250,
+# 	"DICT_6X6_1000": cv2.aruco.DICT_6X6_1000,
+# 	"DICT_7X7_50": cv2.aruco.DICT_7X7_50,
+# 	"DICT_7X7_100": cv2.aruco.DICT_7X7_100,
+# 	"DICT_7X7_250": cv2.aruco.DICT_7X7_250,
+# 	"DICT_7X7_1000": cv2.aruco.DICT_7X7_1000,
+# 	"DICT_ARUCO_ORIGINAL": cv2.aruco.DICT_ARUCO_ORIGINAL,
 # 	"DICT_APRILTAG_16h5": cv2.aruco.DICT_APRILTAG_16h5,
 # 	"DICT_APRILTAG_25h9": cv2.aruco.DICT_APRILTAG_25h9,
 # 	"DICT_APRILTAG_36h10": cv2.aruco.DICT_APRILTAG_36h10,
 # 	"DICT_APRILTAG_36h11": cv2.aruco.DICT_APRILTAG_36h11
 # }
 
-# #fetch image
-# print("[INFO] loading image...")
-# image = cv2.imread(args["image"])
-# image = imutils.resize(image, width = 600)
-
-# #Check which aruco tag it is
+# #If aruco not recognised in dictionary break program
 # if ARUCO_DICT.get(args["type"], None) is None:
-#     print("[INFO] ArUCo tag of '{}' is not supported".format 
-#           (args["type"]))
+#     print("[INFO] ArUCo tag of '{}' is not supported".format(
+#         args["type"]))
 #     sys.exit(0)
 
-# #Load aruco dict, grab aruco params, detect markers
+# #load dict and grab params
 # print("[INFO] detecting '{}' tags...".format(args["type"]))
-# arucoDict = cv2.aruco.Dictionary_get(ARUCO_DICT[args["type"]])
-# arucoParams = cv2.aruco.DetectorParameters_create()
-# (corners, ids, rejected) = cv2.aruco.detectMarkers(image, arucoDict,
-# parameters = arucoParams)
+# arucoDict = cv2.aruco.getPredefinedDictionary(ARUCO_DICT[args["type"]])
+# arucoParams = cv2.aruco.DetectorParameters()
+# detector = cv2.aruco.ArucoDetector(arucoDict, arucoParams)
 
-# if len(corners) > 0:
-#     ids = ids.flatten()
+# #Init video stream
+# print("[INFO] starting video stream...")
+# vs = VideoStream(src = 0).start()
+# time.sleep(2.0)
 
-# #Loop over detected markers
-#     for (markerCorner, markerID) in zip(corners, ids):
-# #Extract corners (top left, top right, bottom right, bottom left always
-# #that order)
-#         corners = markerCorner.reshape((4,2))
-#         (topLeft, topRight, bottomRight, bottomLeft) = corners
+# while True:
+#     #Grab frames and resize to 1000px
+#     frame = vs.read()
+#     frame = imutils.resize(frame, width = 1000)
 
-# #Convert corners from (x, y) to int
-#         topLeft = (int(topRight[0]), int(topRight[1]))
-#         topRight = (int(topRight[0]), int(topRight[1]))
-#         bottomRight = (int(bottomRight[0]), int(bottomRight[1]))
-#         bottomLeft = (int(bottomLeft[0], int(bottomLeft[1])))
+#     #Detect Aruco in current frame
+#     (corners, ids, rejected) = detector.detectMarkers(frame)
+    
+#     #Check if marker is detected
+#     if len(corners) > 0:
+#         ids = ids.flatten()
 
-# #Draw box around aruco marker
-#         cv2.line(image, topLeft, topRight, (0, 255, 0), 2)
-#         cv2.line(image, topRight, bottomRight, (0, 255, 0), 2)
-#         cv2.line(image, bottomRight, bottomLeft, (0, 255, 0), 2)
-#         cv2.line(image, bottomLeft, topLeft, (0, 255, 0), 2)
+#         #Loop over detected corners
+#         for (markerCorner, markerID) in zip(corners, ids):
 
-# #Find center of aruco marker
-#         cX = int((topLeft[0] + bottomRight[0]) / 2.0)
-#         cY = int((topLeft[1] + bottomRight[1]) / 2.0)
-#         cv2.circle(image, (cX, cY), 4, (0, 0, 255), -1)
+#             #Extract corners (top left, top right, bottom right, bottom left always
+#             #that order)
+#             corners = markerCorner.reshape((4, 2))
+#             (topLeft, topRight, bottomRight, bottomLeft) = corners
 
-# #Draw marker id
-#         cv2.putText(image, str(markerID),
-#                     (topLeft[0], topLeft[1] - 15), cv2.FONT_HERSHEY_SIMPLEX,
-#                     0.5, (0, 255, 0), 2)
-#         print("[INFO] ArUco marker ID: {}".format(markerID))
+#             #Convert corners from (x, y) to int
+#             topLeft = (int(topRight[0]), int(topRight[1]))
+#             topRight = (int(topRight[0]), int(topRight[1]))
+#             bottomRight = (int(bottomRight[0]), int(bottomRight[1]))
+#             bottomLeft = (int(bottomLeft[0], int(bottomLeft[1])))
 
-# #Show output image
-#         cv2.imshow("Image", image)
-#         cv2.waitKey(0)
+#             #Draw box around aruco marker
+#             cv2.line(frame, topLeft, topRight, (0, 255, 0), 2)
+#             cv2.line(frame, topRight, bottomRight, (0, 255, 0), 2)
+#             cv2.line(frame, bottomRight, bottomLeft, (0, 255, 0), 2)
+#             cv2.line(frame, bottomLeft, topLeft, (0, 255, 0), 2)
 
-#/////////////////////////////////////////////////////////////////////////////
+#             #Find center of aruco marker
+#             cX = int((topLeft[0] + bottomRight[0]) / 2.0)
+#             cY = int((topLeft[1] + bottomRight[1]) / 2.0)
+#             cv2.circle(frame, (cX, cY), 4, (0, 0, 255), -1)
 
-#LIVE IMAGE/VIDEO ARUCO DETECTION
+#             #Draw marker id
+#             cv2.putText(frame, str(markerID),
+#                         (topLeft[0], topLeft[1] - 15), cv2.FONT_HERSHEY_SIMPLEX,
+#                         0.5, (0, 255, 0), 2)
+#             print("[INFO] ArUco marker ID: {}".format(markerID))
 
-ap = argparse.ArgumentParser()
-ap.add_argument("-t", "--type", type = str,
-                default = "DICT_ARUCO_ORIGINAL",
-                help = "type of ArUCo tag to detect")
-args = vars(ap.parse_args())
+#     #Shot output frame
+#     cv2.imshow("Frame", frame)
+#     key = cv2.waitKey(1) & 0xFF
 
-ARUCO_DICT = {
-	"DICT_4X4_50": cv2.aruco.DICT_4X4_50,
-	"DICT_4X4_100": cv2.aruco.DICT_4X4_100,
-	"DICT_4X4_250": cv2.aruco.DICT_4X4_250,
-	"DICT_4X4_1000": cv2.aruco.DICT_4X4_1000,
-	"DICT_5X5_50": cv2.aruco.DICT_5X5_50,
-	"DICT_5X5_100": cv2.aruco.DICT_5X5_100,
-	"DICT_5X5_250": cv2.aruco.DICT_5X5_250,
-	"DICT_5X5_1000": cv2.aruco.DICT_5X5_1000,
-	"DICT_6X6_50": cv2.aruco.DICT_6X6_50,
-	"DICT_6X6_100": cv2.aruco.DICT_6X6_100,
-	"DICT_6X6_250": cv2.aruco.DICT_6X6_250,
-	"DICT_6X6_1000": cv2.aruco.DICT_6X6_1000,
-	"DICT_7X7_50": cv2.aruco.DICT_7X7_50,
-	"DICT_7X7_100": cv2.aruco.DICT_7X7_100,
-	"DICT_7X7_250": cv2.aruco.DICT_7X7_250,
-	"DICT_7X7_1000": cv2.aruco.DICT_7X7_1000,
-	"DICT_ARUCO_ORIGINAL": cv2.aruco.DICT_ARUCO_ORIGINAL,
-	"DICT_APRILTAG_16h5": cv2.aruco.DICT_APRILTAG_16h5,
-	"DICT_APRILTAG_25h9": cv2.aruco.DICT_APRILTAG_25h9,
-	"DICT_APRILTAG_36h10": cv2.aruco.DICT_APRILTAG_36h10,
-	"DICT_APRILTAG_36h11": cv2.aruco.DICT_APRILTAG_36h11
-}
+#     #If 'q' was pressed break
+#     if key == ord("q"):
+#         break
 
-#If aruco not recognised in dictionary break program
-if ARUCO_DICT.get(args["type"], None) is None:
-    print("[INFO] ArUCo tag of '{}' is not supported".format(
-        args["type"]))
-    sys.exit(0)
+# cv2.destroyAllWindows()
+# vs.stop()
 
-#load dict and grab params
-print("[INFO] detecting '{}' tags...".format(args["type"]))
-arucoDict = cv2.aruco.Dictionary_get(ARUCO_DICT[args["type"]])
-arucoParams = cv2.aruco.DetectorParameters_create()
+#////////////////////////////////////////////////////////////////////////
 
-#Init video stream
-print("[INFO] starting video stream...")
-vs = VideoStream(src = 0).start()
+#KOD ZA KAMERU
+
+from flask import Flask, Response
+import cv2
+import imutils
+import time
+from imutils.video import VideoStream
+
+app = Flask(__name__)
+
+#Initialize ArUco Detector
+arucoDict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_100)
+arucoParams = cv2.aruco.DetectorParameters()
+detector = cv2.aruco.ArucoDetector(arucoDict, arucoParams)
+
+#Start Video Stream
+vs = VideoStream(src=0).start()
 time.sleep(2.0)
 
-while True:
-    #Grab frames and resize to 1000px
-    frame = vs.read()
-    frame = imutils.resize(frame, width = 1000)
+def generate_frames():
+    while True:
+        frame = vs.read()
+        if frame is None:
+            continue
+            
+        frame = imutils.resize(frame, width = 800)
+        
+        #Detect Markers
+        (corners, ids, rejected) = detector.detectMarkers(frame)
+        
+        if len(corners) > 0:
+            ids = ids.flatten()
+            cv2.aruco.drawDetectedMarkers(frame, corners, ids)
+            for (markerCorner, markerID) in zip(corners, ids):
+                #Extract corners (top left, top right, bottom right, bottom left always
+                #that order)
+                corners = markerCorner.reshape((4, 2))
+                (topLeft, topRight, bottomRight, bottomLeft) = corners
 
-    #Detect Aruco in current frame
-    (corners, ids, rejected) = cv2.aruco.detectMarkers(frame,
-        arucoDict, parameters = arucoParams)
-    
-    #Check if marker is detected
-    if len(corners) > 0:
-        ids = ids.flatten()
+                #Convert corners from (x, y) to int
+                topLeft = (int(topRight[0]), int(topRight[1]))
+                topRight = (int(topRight[0]), int(topRight[1]))
+                bottomRight = (int(bottomRight[0]), int(bottomRight[1]))
+                bottomLeft = (int(bottomLeft[0]), int(bottomLeft[1]))
 
-        #Loop over detected corners
-        for (markerCorner, markerID) in zip(corners, ids):
+                #Draw box around aruco marker
+                cv2.line(frame, topLeft, topRight, (0, 255, 0), 2)
+                cv2.line(frame, topRight, bottomRight, (0, 255, 0), 2)
+                cv2.line(frame, bottomRight, bottomLeft, (0, 255, 0), 2)
+                cv2.line(frame, bottomLeft, topLeft, (0, 255, 0), 2)
 
-            #Extract corners (top left, top right, bottom right, bottom left always
-            #that order)
-            corners = markerCorner.reshape((4, 2))
-            (topLeft, topRight, bottomRight, bottomLeft) = corners
+                #Find center of aruco marker
+                #cX = int((topLeft[0] + bottomRight[0]) / 2.0)
+                #cY = int((topLeft[1] + bottomRight[1]) / 2.0)
+                #cv2.circle(frame, (cX, cY), 4, (0, 0, 255), -1)
 
-            #Convert corners from (x, y) to int
-            topLeft = (int(topRight[0]), int(topRight[1]))
-            topRight = (int(topRight[0]), int(topRight[1]))
-            bottomRight = (int(bottomRight[0]), int(bottomRight[1]))
-            bottomLeft = (int(bottomLeft[0], int(bottomLeft[1])))
+                #Draw marker id
+                if markerID == 36:
+                    cv2.putText(frame, str("BLUE"),
+                            (topLeft[0], topLeft[1] - 30), cv2.FONT_HERSHEY_SIMPLEX,
+                            0.5, (0, 255, 0), 2)
+                elif markerID == 47:
+                    cv2.putText(frame, str("YELLOW"),
+                            (topLeft[0], topLeft[1] - 30), cv2.FONT_HERSHEY_SIMPLEX,
+                            0.5, (0, 255, 0), 2)
+                
 
-            #Draw box around aruco marker
-            cv2.line(frame, topLeft, topRight, (0, 255, 0), 2)
-            cv2.line(frame, topRight, bottomRight, (0, 255, 0), 2)
-            cv2.line(frame, bottomRight, bottomLeft, (0, 255, 0), 2)
-            cv2.line(frame, bottomLeft, topLeft, (0, 255, 0), 2)
+        #Encode frame as JPEG for streaming
+        (flag, encodedImage) = cv2.imencode(".jpg", frame)
+        if not flag:
+            continue
 
-            #Find center of aruco marker
-            cX = int((topLeft[0] + bottomRight[0]) / 2.0)
-            cY = int((topLeft[1] + bottomRight[1]) / 2.0)
-            cv2.circle(frame, (cX, cY), 4, (0, 0, 255), -1)
+        #Yield the output frame in byte format
+        yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + 
+               bytearray(encodedImage) + b'\r\n')
 
-            #Draw marker id
-            cv2.putText(frame, str(markerID),
-                        (topLeft[0], topLeft[1] - 15), cv2.FONT_HERSHEY_SIMPLEX,
-                        0.5, (0, 255, 0), 2)
-            print("[INFO] ArUco marker ID: {}".format(markerID))
+@app.route("/")
+def video_feed():
+    #Returns the streaming response
+    return Response(generate_frames(),
+                    mimetype="multipart/x-mixed-replace; boundary=frame")
 
-    #Shot output frame
-    cv2.imshow("Frame", frame)
-    key = cv2.waitKey(1) & 0xFF
-
-    #If 'q' was pressed break
-    if key == ord("q"):
-        break
-
-cv2.destroyAllWindows()
-vs.stop()
+if __name__ == "__main__":
+    #Runs the server on all available IPs on your local network
+    app.run(host="0.0.0.0", port=8080, debug=False, threaded=True)
