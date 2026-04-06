@@ -232,8 +232,13 @@ import cv2
 import imutils
 import time
 from imutils.video import VideoStream
+import serial
+import threading
 
 app = Flask(__name__)
+received_msg = 256
+flag_success = False
+ser = None
 
 #Initialize ArUco Detector
 arucoDict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_100)
@@ -244,6 +249,68 @@ detector = cv2.aruco.ArucoDetector(arucoDict, arucoParams)
 vs = VideoStream(src=0).start()
 time.sleep(2.0)
 
+
+
+def create_packet(sendBits):
+    """ Kreira paket sa zaglavljem 0xFF 0xFF i checksum-om """
+    checksum = 0
+    header = [0xFF, 0xFF]
+    sendByte = []
+    # Konvertovanje u bajtove (mora biti u opsegu 0-255)
+    for i in range(0, len(sendBits), 8):
+        chunk = sendBits[i:i+8]
+        while len(chunk) < 8:
+            chunk.append(0)
+
+            byte_val = int("".join(map(str, chunk)), 2)
+            sendByte.append(byte_val)
+    # checksum = suma svih bajtova (bez header-a), modulo 256
+    checksum = sum(sendByte) % 256
+
+    sendByte.insert(0, 0xFF)  # Dodaj header (255)
+    sendByte.append(checksum)  # Dodaj checksum na kraj paketa
+    return bytes(sendByte)  # Vraćamo kao bytes objekat za slanje preko serijske komunikacije
+
+def receive_packet():
+    global received_msg, ser, flag_success
+    
+
+    if ser is None:
+        ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=1)
+    while True:
+        try:
+            check_sum  = 0
+            primanje_bajt = ser.read(4)
+            if(len(primanje_bajt) == 4):
+                
+
+                if(primanje_bajt[0] == 0xFF):
+                    if(primanje_bajt[1] ==  0xFF):
+
+
+                        for i  in range(3):
+                            check_sum = check_sum  +  primanje_bajt[i]
+                            check_sum  = check_sum %  256
+
+                        if(check_sum  ==  primanje_bajt[3]):
+                            if(primanje_bajt[2] == 255):
+                                flag_success = True
+                                time.sleep(0.1)
+                            else:
+                                flag_success = False
+                        
+                            ser.reset_input_buffer()
+
+            else:
+                received_msg = 256
+                flag_success = False
+                time.sleep(0.1)
+                ser.reset_input_buffer()
+            #print(odom_x,odom_y,odom_theta)
+        except Exception as e:
+            print(f"Error reading serial: {e}")
+            time.sleep(1)
+
 def generate_frames():
     while True:
         frame = vs.read()
@@ -251,21 +318,28 @@ def generate_frames():
             continue
             
         frame = imutils.resize(frame, width = 800)
-        
+        cnt = 0
+        msg = []
+
+
         #Detect Markers
         (corners, ids, rejected) = detector.detectMarkers(frame)
         
         if len(corners) > 0:
             ids = ids.flatten()
+            
+            #Sorting the image x coord
+            data = sorted(zip(corners, ids), key = lambda x: x[0][0][0][0])
+
             cv2.aruco.drawDetectedMarkers(frame, corners, ids)
-            for (markerCorner, markerID) in zip(corners, ids):
+            for (markerCorner, markerID) in data:
                 #Extract corners (top left, top right, bottom right, bottom left always
                 #that order)
-                corners = markerCorner.reshape((4, 2))
-                (topLeft, topRight, bottomRight, bottomLeft) = corners
+                curr_corners = markerCorner.reshape((4, 2))
+                (topLeft, topRight, bottomRight, bottomLeft) = curr_corners
 
                 #Convert corners from (x, y) to int
-                topLeft = (int(topRight[0]), int(topRight[1]))
+                topLeft = (int(topLeft[0]), int(topLeft[1]))
                 topRight = (int(topRight[0]), int(topRight[1]))
                 bottomRight = (int(bottomRight[0]), int(bottomRight[1]))
                 bottomLeft = (int(bottomLeft[0]), int(bottomLeft[1]))
@@ -286,10 +360,18 @@ def generate_frames():
                     cv2.putText(frame, str("BLUE"),
                             (topLeft[0], topLeft[1] - 30), cv2.FONT_HERSHEY_SIMPLEX,
                             0.5, (0, 255, 0), 2)
+                    msg.append(0) 
                 elif markerID == 47:
                     cv2.putText(frame, str("YELLOW"),
                             (topLeft[0], topLeft[1] - 30), cv2.FONT_HERSHEY_SIMPLEX,
                             0.5, (0, 255, 0), 2)
+                    msg.append(1)
+                
+
+                cnt += 1
+                print(cnt)
+        if flag_success is True:
+                print(msg)
                 
 
         #Encode frame as JPEG for streaming
@@ -309,4 +391,9 @@ def video_feed():
 
 if __name__ == "__main__":
     #Runs the server on all available IPs on your local network
+    threading.Thread(target = receive_packet, daemon = True).start() #funckija koja cita poruke#
+
+
     app.run(host="0.0.0.0", port=8080, debug=False, threaded=True)
+
+
